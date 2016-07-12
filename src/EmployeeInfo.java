@@ -1,3 +1,25 @@
+
+import com.mysql.jdbc.MySQLConnection;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import net.coobird.thumbnailator.Thumbnails;
+
+
+
+
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,11 +32,21 @@
  */
 public class EmployeeInfo extends javax.swing.JFrame {
 
+    /***** SQL Connection ***/
+    Connection conn = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
+    
+    
     /**
      * Creates new form EmployeeInfo
      */
     public EmployeeInfo() {
         initComponents();
+        
+        // datababse connection
+        conn =  MysqlConntect.ConnectDB();
     }
 
     /**
@@ -26,6 +58,7 @@ public class EmployeeInfo extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -37,23 +70,23 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField8 = new javax.swing.JTextField();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        txt_imagepath = new javax.swing.JTextField();
+        txt_name = new javax.swing.JTextField();
+        txt_blood = new javax.swing.JTextField();
+        txt_number = new javax.swing.JTextField();
+        txt_age = new javax.swing.JTextField();
+        jRadioButton_male = new javax.swing.JRadioButton();
+        jRadioButton_female = new javax.swing.JRadioButton();
+        jComboBox_qualification = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
+        txt_address = new javax.swing.JTextArea();
+        btn_image_upload = new javax.swing.JButton();
         jTextField3 = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jLabel11 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jDateChooser_date = new com.toedter.calendar.JDateChooser();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
@@ -97,48 +130,68 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel8.setText("DOJ");
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_imagepath.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        txt_imagepath.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
-        jTextField2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_name.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txt_name.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
-        jTextField4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_blood.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txt_blood.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
-        jTextField6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        txt_number.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txt_number.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_number.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
+                txt_numberActionPerformed(evt);
             }
         });
 
-        jTextField8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_age.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txt_age.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jRadioButton1.setText("Male");
+        buttonGroup1.add(jRadioButton_male);
+        jRadioButton_male.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jRadioButton_male.setText("Male");
+        jRadioButton_male.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton_maleActionPerformed(evt);
+            }
+        });
 
-        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jRadioButton2.setText("Female");
+        buttonGroup1.add(jRadioButton_female);
+        jRadioButton_female.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jRadioButton_female.setText("Female");
+        jRadioButton_female.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton_femaleActionPerformed(evt);
+            }
+        });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox_qualification.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
+        jComboBox_qualification.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MBA", "MBBS", "B.TECH", "M.TECH", "B.COM", "BCA", "MCA", "PHD" }));
+        jComboBox_qualification.setSelectedIndex(-1);
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel9.setText("Address");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 153, 255)));
-        jScrollPane1.setViewportView(jTextArea1);
+        txt_address.setColumns(20);
+        txt_address.setRows(5);
+        txt_address.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 153, 255)));
+        jScrollPane1.setViewportView(txt_address);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/upload-icon.png"))); // NOI18N
-        jButton1.setText("Upload Image");
-        jButton1.setMaximumSize(new java.awt.Dimension(142, 32));
-        jButton1.setMinimumSize(new java.awt.Dimension(142, 32));
-        jButton1.setPreferredSize(new java.awt.Dimension(142, 32));
+        btn_image_upload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/upload-icon.png"))); // NOI18N
+        btn_image_upload.setText("Upload Image");
+        btn_image_upload.setMaximumSize(new java.awt.Dimension(142, 32));
+        btn_image_upload.setMinimumSize(new java.awt.Dimension(142, 32));
+        btn_image_upload.setPreferredSize(new java.awt.Dimension(142, 32));
+        btn_image_upload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_image_uploadActionPerformed(evt);
+            }
+        });
 
+        jTextField3.setEditable(false);
         jTextField3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jTextField3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
@@ -187,28 +240,28 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addGap(57, 57, 57)
-                                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txt_blood, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txt_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jRadioButton2, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                                            .addComponent(jRadioButton_female, javax.swing.GroupLayout.Alignment.TRAILING)))))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton1)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(jRadioButton_male)
+                                    .addComponent(txt_age, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                            .addComponent(jTextField6)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jDateChooser_date, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                            .addComponent(txt_number)
+                            .addComponent(jComboBox_qualification, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel8))
                 .addGap(24, 24, 24)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -216,9 +269,9 @@ public class EmployeeInfo extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_image_upload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
-                    .addComponent(jTextField1))
+                    .addComponent(txt_imagepath))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(78, Short.MAX_VALUE))
@@ -240,42 +293,43 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                     .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2))
                                 .addGap(12, 12, 12)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel3)
-                                    .addComponent(jRadioButton1)
-                                    .addComponent(jRadioButton2))
+                                    .addComponent(jRadioButton_male)
+                                    .addComponent(jRadioButton_female))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel4)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txt_age, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(22, 22, 22)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel5)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txt_blood, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel6)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txt_number, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(76, 76, 76))
                             .addComponent(jScrollPane1))
                         .addGap(10, 10, 10)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jComboBox_qualification, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel7))
                                 .addGap(19, 19, 19)
                                 .addComponent(jLabel8))
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btn_image_upload, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(4, 4, 4)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-                                    .addComponent(jLabel10)
-                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))))
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel10)
+                                        .addComponent(jDateChooser_date, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txt_imagepath)))))
                     .addComponent(jDesktopPane1))
                 .addGap(40, 40, 40))
         );
@@ -315,6 +369,11 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jButton3.setMaximumSize(new java.awt.Dimension(80, 32));
         jButton3.setMinimumSize(new java.awt.Dimension(80, 32));
         jButton3.setPreferredSize(new java.awt.Dimension(80, 32));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/update-icon.png"))); // NOI18N
@@ -380,15 +439,13 @@ public class EmployeeInfo extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButton4)
-                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel12))
-                            .addComponent(jTextField5))))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton4)
+                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12))
+                        .addComponent(jTextField5)))
                 .addContainerGap())
         );
 
@@ -462,9 +519,9 @@ public class EmployeeInfo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void txt_numberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_numberActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_txt_numberActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
@@ -473,6 +530,130 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void btn_image_uploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_image_uploadActionPerformed
+        
+        //initialization of file chooser
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null); // no value when its open
+        File f = chooser.getSelectedFile();
+        
+        filename = f.getAbsolutePath();
+        txt_imagepath.setText(filename);
+        
+        //image upload code
+      try{
+          
+          
+          File image = new File(filename);
+          
+          //setting size of buffered image and manipulate image dimensions
+          BufferedImage thumbanail = Thumbnails.of(image).size(260, 380).asBufferedImage();
+          
+          //creates buffer inside memory
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          
+          ImageIO.write(thumbanail, "jpeg", os);
+          
+          InputStream is = new ByteArrayInputStream(os.toByteArray());
+          
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          
+          byte[] buf = new byte[1024]; // 1 MB
+          
+          for ( int readNum;(readNum = is.read(buf))!= -1;) {
+              bos.write(buf,0,readNum);
+          }
+          
+          viewimage = new ImageIcon(thumbanail);
+          jLabel11.setIcon(viewimage);
+          
+          //save it to byte array for database storage
+          employeeImage = bos.toByteArray();
+          
+      }catch (Exception e) {
+          JOptionPane.showMessageDialog(null, e);
+      } 
+        
+    }//GEN-LAST:event_btn_image_uploadActionPerformed
+
+    private void jRadioButton_maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton_maleActionPerformed
+        gender = "Male";
+    }//GEN-LAST:event_jRadioButton_maleActionPerformed
+
+    private void jRadioButton_femaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton_femaleActionPerformed
+        gender = "Female";
+    }//GEN-LAST:event_jRadioButton_femaleActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String name_validate = txt_name.getText();
+        String age_validate = txt_age.getText();
+        String blood_validate = txt_blood.getText();
+        String number_validate = txt_number.getText();
+        
+        java.util.Date date_validate = jDateChooser_date.getDate();
+        String address_validate = txt_address.getText();
+        
+        /** Validation Conditions **/
+        
+        if (name_validate.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter name");
+        } else if( gender == null){
+            JOptionPane.showMessageDialog(null, "Please select gender male or female");
+        } else if (age_validate.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter age ");
+        }else if (blood_validate.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter blood group");
+        }else if (number_validate.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter contact number");
+        }else if (jComboBox_qualification.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Please select qualification");
+        }else if(date_validate == null) {
+            JOptionPane.showMessageDialog(null, "Please enter a date of joinning");
+        }else if (address_validate.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter address");
+        }else if (employeeImage == null) {
+            JOptionPane.showMessageDialog(null, "Please choose image");
+        }
+        
+        else {
+        
+        try {
+                String sql = "insert into employeeinfo(Name,Gender,Age,BloodGroup,ContactNo,Qualification,DOJ,Adress,EmpImage) values(?,?,?,?,?,?,?,?,?)";
+                pst = conn.prepareStatement(sql);
+                pst.setString(1, txt_name.getText());
+                pst.setString(2,gender);
+                pst.setString(3,txt_age.getText());
+                pst.setString(4,txt_blood.getText());
+                pst.setString(5,txt_number.getText());
+                
+                String comboValue = jComboBox_qualification.getSelectedItem().toString();
+                pst.setString(6,comboValue);
+                
+                java.util.Date date = jDateChooser_date.getDate();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String selectedDate = sdf.format(date);
+                
+                pst.setString(7,selectedDate);
+                pst.setString(8,txt_address.getText());
+
+                pst.setBytes(9,employeeImage);
+
+                pst.execute();
+                
+                JOptionPane.showMessageDialog(null, "Data saved Successful");
+                
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }finally {
+            try {
+                rs.close();
+                pst.close();
+            } catch (Exception e) {
+            }
+        }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -510,14 +691,15 @@ public class EmployeeInfo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btn_image_upload;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JComboBox<String> jComboBox_qualification;
+    private com.toedter.calendar.JDateChooser jDateChooser_date;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -536,18 +718,23 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton_female;
+    private javax.swing.JRadioButton jRadioButton_male;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextArea txt_address;
+    private javax.swing.JTextField txt_age;
+    private javax.swing.JTextField txt_blood;
+    private javax.swing.JTextField txt_imagepath;
+    private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_number;
     // End of variables declaration//GEN-END:variables
+    
+    String filename = null;
+    private ImageIcon viewimage = null;
+    private String gender;
+    byte[] employeeImage = null;
 }
