@@ -1,3 +1,17 @@
+
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.text.MessageFormat;
+import javax.swing.ButtonModel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import net.proteanit.sql.DbUtils;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,13 +24,45 @@
  */
 public class Admin extends javax.swing.JFrame {
 
+     /***** SQL Connection ***/
+    
+    Connection conn = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
+    
+    
+    
     /**
      * Creates new form Admin
      */
     public Admin() {
         initComponents();
+        
+        // datababse connection
+        conn =  MysqlConntect.ConnectDB();
+       
+    
+        this.setTitle("Admin Panel");
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.pack();
+        
+        
+     
+     
+      
+        
+        
+        UpdateTable();
     }
 
+      public void Close() {
+        
+        WindowEvent wce = new WindowEvent(this,WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wce);
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -26,23 +72,499 @@ public class Admin extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txt_name = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txt_password = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txt_surname = new javax.swing.JTextField();
+        txt_username = new javax.swing.JTextField();
+        btn_save = new javax.swing.JButton();
+        btn_clear = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        admin_yes = new javax.swing.JRadioButton();
+        admin_no = new javax.swing.JRadioButton();
+        jLabel6 = new javax.swing.JLabel();
+        txt_admin_id = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table_admins = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Admin");
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel1.setText("Name");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel2.setText("Surname");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel3.setText("Username");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel4.setText("Password");
+
+        btn_save.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btn_save.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Save-icon.png"))); // NOI18N
+        btn_save.setText("Save");
+        btn_save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_saveActionPerformed(evt);
+            }
+        });
+
+        btn_clear.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Clear-icon.png"))); // NOI18N
+        btn_clear.setText("Clear");
+        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clearActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel5.setText("Admin");
+
+        buttonGroup1.add(admin_yes);
+        admin_yes.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        admin_yes.setText("Yes");
+        admin_yes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                admin_yesActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(admin_no);
+        admin_no.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        admin_no.setText("No");
+        admin_no.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                admin_noActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel6.setText("Admin ID");
+
+        txt_admin_id.setEditable(false);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(btn_clear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn_save))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel1))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txt_username))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(9, 9, 9)
+                                .addComponent(txt_name))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(txt_admin_id))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(admin_yes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(admin_no))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txt_password))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(txt_surname, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txt_admin_id, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_surname, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txt_username, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_password, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(admin_yes)
+                    .addComponent(admin_no))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_clear)
+                    .addComponent(btn_save))
+                .addGap(34, 34, 34))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jButton3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/update-icon.png"))); // NOI18N
+        jButton3.setText("Employee's");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        btn_delete.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/delete-icon.png"))); // NOI18N
+        btn_delete.setText("Delete");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
+        table_admins.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        table_admins.setName("Admins"); // NOI18N
+        table_admins.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_adminsMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(table_admins);
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/print-icon.png"))); // NOI18N
+        jButton1.setText("Print");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(btn_delete)
+                .addGap(25, 25, 25)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addGap(35, 35, 35))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_delete)
+                    .addComponent(jButton3)
+                    .addComponent(jButton1))
+                .addGap(32, 32, 32))
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.getAccessibleContext().setAccessibleName("Admin panel");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 801, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 482, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /***     CLEAR TEXT FIELDS METHOD ***/
+    private void ClearFields() {
+        txt_name.setText("");
+        txt_password.setText("");
+        txt_name.setText("");
+        txt_username.setText("");
+        txt_surname.setText("");
+        txt_admin_id.setText("");
+        
+    }
+    
+    /*** MD5 ENCRYPTION METHOD ***/
+    public static String TextToMD5(String text) {
+        StringBuffer hex = null ;
+        
+        try {
+            //Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+              md.reset();
+              md.update(text.getBytes());
+              
+              byte byteData[] = md.digest();
+              
+              //convert the byte to hex format 
+               hex = new StringBuffer();
+              for (int i = 0; i < byteData.length; i++) {
+                 hex.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+              }  
+       } catch (NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(null, "Error encrypting password");
+        }
+ 
+        return hex.toString();
+        
+    }
+    
+    
+    
+    /*** SAVE BUTTON METHOD ***/
+    private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
+      
+        
+        if (txt_name.getText().equals("") || txt_name.getText().matches(".*\\d+.*")) {
+            JOptionPane.showMessageDialog(null, "Please check Name value");
+        } 
+        else if (txt_surname.getText().equals("") || txt_surname.getText().matches(".*\\d+.*")) {
+            JOptionPane.showMessageDialog(null, "Please check Name value");
+        } 
+        else {
+            try {
+            String sql = "INSERT INTO USERS(username,password,Name,Surname,Admin) VALUES(?,?,?,?,?)";
+
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, txt_name.getText());
+            pst.setString(2, TextToMD5(txt_password.getText()));
+            pst.setString(3, txt_name.getText());
+            pst.setString(4, txt_surname.getText());
+            pst.setString(5,admin);
+            
+
+            pst.execute();
+
+            JOptionPane.showMessageDialog(null, "Admin saved successful");
+
+
+           }catch (Exception e) {
+             JOptionPane.showMessageDialog(null, "Error saving Admin to database");
+           }
+
+           UpdateTable();
+           ClearFields();
+        }
+    }//GEN-LAST:event_btn_saveActionPerformed
+        
+    /*** CLEAR BUTTON METHOD ***/
+    private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
+        ClearFields();
+        
+    }//GEN-LAST:event_btn_clearActionPerformed
+
+    private void admin_yesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_admin_yesActionPerformed
+       admin = "yes";
+    }//GEN-LAST:event_admin_yesActionPerformed
+
+    private void admin_noActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_admin_noActionPerformed
+      admin = "no";
+    }//GEN-LAST:event_admin_noActionPerformed
+
+    
+    /*** TABLE MOUSE CLICK ****/
+    private void table_adminsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_adminsMouseClicked
+        int row = table_admins.getSelectedRow();
+        String table_data = (table_admins.getModel().getValueAt(row, 0)).toString();
+        
+        try {
+            String sql = "Select * from users where userid ='"+table_data+"'";
+            pst = conn.prepareStatement(sql);
+            rs= pst.executeQuery();
+            
+            
+                if (rs.next()) {
+                    txt_admin_id.setText(rs.getString("userid"));
+                    txt_name.setText(rs.getString("Name"));
+                    txt_surname.setText(rs.getString("Surname"));
+                    txt_username.setText(rs.getString("username"));
+                    txt_password.setText(rs.getString("password"));
+                    
+                        if (rs.getString("Admin").equals("yes")) {
+                            admin_yes.setSelected(true);
+                        }
+                        if (rs.getString("Admin").equals("no")) {
+                            admin_no.setSelected(true);
+                        }
+                    
+                }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading data from datababse");
+        }
+    }//GEN-LAST:event_table_adminsMouseClicked
+
+    
+    /*** DELETE BUTTON ***/
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        if (txt_name.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please select admin from table");
+        }
+        else {
+            int x = JOptionPane.showConfirmDialog(null,"Do you want to delete admin ?","Delete",JOptionPane.YES_NO_OPTION);
+                
+                if ( x == 0) {
+                    try {
+                        
+                        
+                        String sql = "delete from users where userid = ?";
+                        pst = conn.prepareStatement(sql);
+                        pst.setString(1,txt_admin_id.getText() );
+                        pst.execute();
+                        
+                       JOptionPane.showMessageDialog(null, "Deleted Successfull");
+                       
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Error deleting admin from database");
+                    }
+                }
+        }
+        
+        UpdateTable();
+        ClearFields();
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
+    /*** PRINT BUTTON ***/
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        MessageFormat header = new MessageFormat("Admin List Report Print");
+        MessageFormat footer = new MessageFormat("Page {0,number,integer}");
+        
+        try {
+            table_admins.print(JTable.PrintMode.FIT_WIDTH,header,footer);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error Printing data");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+   
+      EmployeeInfo emp = new EmployeeInfo();
+      emp.setVisible(true);
+      
+      Close();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    
+    
+    
+    private void UpdateTable() {
+        try {
+            String sql = "select * from users";
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            
+            
+            table_admins.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading data from database");
+        }finally {
+            try {
+                rs.close();
+                pst.close();
+            } catch (Exception e) {
+            }
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -79,5 +601,32 @@ public class Admin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton admin_no;
+    private javax.swing.JRadioButton admin_yes;
+    private javax.swing.JButton btn_clear;
+    private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_save;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable table_admins;
+    private javax.swing.JTextField txt_admin_id;
+    private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_password;
+    private javax.swing.JTextField txt_surname;
+    private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
+    private String admin = "yes";
 }

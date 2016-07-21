@@ -182,7 +182,7 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -193,7 +193,7 @@ public class Login extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(87, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -221,7 +221,7 @@ public class Login extends javax.swing.JFrame {
             
             pst = conn.prepareStatement(sql);
             pst.setString(1,txt_username.getText()); // 1 parameter username
-            pst.setString(2, txt_password.getText()); // 2 paramet password
+            pst.setString(2, Admin.TextToMD5(txt_password.getText())); // 2 paramet password
             rs = pst.executeQuery();
             
             if (rs.next()) {
@@ -259,8 +259,12 @@ public class Login extends javax.swing.JFrame {
                 timer.stop();
                 
                 //open new JFrame Admin
-                Admin adm = new Admin();
-                adm.setVisible(true);
+               // Admin adm = new Admin();
+               // adm.setVisible(true);
+                
+                //open Employee frame
+                EmployeeInfo emp = new EmployeeInfo();
+                    emp.setVisible(true);
                 
                 //close Login frame after login
                 Close();
@@ -290,16 +294,19 @@ public class Login extends javax.swing.JFrame {
                 try {
                 //prepared statement
                 String sql = "select *from users where username = ? and password = ?";
-
+                
+                
                 pst = conn.prepareStatement(sql);
                 pst.setString(1,txt_username.getText()); // 1 parameter username
-                pst.setString(2, txt_password.getText()); // 2 paramet password
+                pst.setString(2,Admin.TextToMD5( txt_password.getText())); // 2 paramet password
                 rs = pst.executeQuery();
 
                 if (rs.next()) {
 
                     timer.start();
                     //JOptionPane.showMessageDialog(null, "username & password are correctt");
+                    
+                    
                 } else {
                      JOptionPane.showMessageDialog(null, "username and password are not correct");
                 }

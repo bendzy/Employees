@@ -1,5 +1,9 @@
 
 import com.mysql.jdbc.MySQLConnection;
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+import com.toedter.calendar.JCalendar;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,12 +12,15 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import net.coobird.thumbnailator.Thumbnails;
+import net.proteanit.sql.DbUtils;
 
 
 
@@ -47,8 +54,74 @@ public class EmployeeInfo extends javax.swing.JFrame {
         
         // datababse connection
         conn =  MysqlConntect.ConnectDB();
+       
+        // Load table with data from db
+        UpdateTable();
+        
+         jRadioButton1.setSelected(false);
+         jRadioButton1.setVisible(false); //hiding radio button
+         
+         btn_save.setEnabled(false);
+         
+         
+         this.pack();
+         this.setTitle("Employee Managment");
+         this.setResizable(false);
+         this.setLocationRelativeTo(null);
+         this.setVisible(true);
     }
-
+    
+    /*** Clears all text fields ***/
+    public void ClearFileds() {
+        txt_id.setText("");
+        txt_address.setText("");
+        txt_age.setText("");
+        txt_blood.setText("");
+        txt_imagepath.setText("");
+        txt_name.setText("");
+        txt_number.setText("");
+        jComboBox_qualification.setSelectedIndex(-1);
+        jDateChooser_date.setDate(null);
+        jLabel11.setIcon(null);
+        
+        jRadioButton_male.setSelected(false);
+        jRadioButton_female.setSelected(false);
+        jRadioButton1.setSelected(true);
+    }
+    
+    /*** UPDATE TABLE METHOD ***/
+    private void UpdateTable() {
+       try {
+           String sql = "select * from employeeinfo";
+           pst = conn.prepareStatement(sql);
+           rs = pst.executeQuery();
+           
+           jTable1.setModel(DbUtils.resultSetToTableModel(rs));
+           
+       }catch (Exception e) {
+           
+           JOptionPane.showMessageDialog(null, "Error loading data from database");
+       } finally {
+           try {
+               rs.close();
+               pst.close();
+           }catch(Exception e) {
+               
+           }
+       }
+    }
+    
+    
+    
+      public void Close() {
+        
+        WindowEvent wce = new WindowEvent(this,WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wce);
+        
+    }
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,6 +132,9 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -82,26 +158,36 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_address = new javax.swing.JTextArea();
         btn_image_upload = new javax.swing.JButton();
-        jTextField3 = new javax.swing.JTextField();
+        txt_id = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jLabel11 = new javax.swing.JLabel();
         jDateChooser_date = new com.toedter.calendar.JDateChooser();
+        jRadioButton1 = new javax.swing.JRadioButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        btn_new = new javax.swing.JButton();
+        btn_save = new javax.swing.JButton();
+        btn_update = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
+        btn_clear = new javax.swing.JButton();
         jTextField5 = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
+        btn_print = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+
+        jMenu1.setText("jMenu1");
+
+        jMenu2.setText("jMenu2");
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
@@ -191,9 +277,9 @@ public class EmployeeInfo extends javax.swing.JFrame {
             }
         });
 
-        jTextField3.setEditable(false);
-        jTextField3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
+        txt_id.setEditable(false);
+        txt_id.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txt_id.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 153, 255)));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel10.setText("Image Path");
@@ -208,73 +294,73 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        buttonGroup1.add(jRadioButton1);
+        jRadioButton1.setText("r3");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addGap(50, 78, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 1, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel2))
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGap(57, 57, 57)
-                                        .addComponent(txt_blood, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txt_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jRadioButton_female, javax.swing.GroupLayout.Alignment.TRAILING)))))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton_male)
-                                    .addComponent(txt_age, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7))
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jDateChooser_date, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
                             .addComponent(txt_number)
                             .addComponent(jComboBox_qualification, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jLabel8))
-                .addGap(24, 24, 24)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel1)
+                                .addComponent(jLabel3)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel2))
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addGap(57, 57, 57)
+                                    .addComponent(txt_blood, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txt_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_id, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jRadioButton_female, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jRadioButton_male)
+                                .addComponent(txt_age, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel10)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton1)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btn_image_upload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addComponent(txt_imagepath))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(33, 33, 33)
                 .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addContainerGap(320, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -290,7 +376,7 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                         .addGap(9, 9, 9)
                                         .addComponent(jLabel9))
                                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txt_id, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -299,7 +385,8 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel3)
                                     .addComponent(jRadioButton_male)
-                                    .addComponent(jRadioButton_female))
+                                    .addComponent(jRadioButton_female)
+                                    .addComponent(jRadioButton1))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel4)
@@ -315,12 +402,12 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                 .addGap(76, 76, 76))
                             .addComponent(jScrollPane1))
                         .addGap(10, 10, 10)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jComboBox_qualification, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7))
-                                .addGap(19, 19, 19)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jComboBox_qualification, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(btn_image_upload, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -329,7 +416,7 @@ public class EmployeeInfo extends javax.swing.JFrame {
                                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabel10)
                                         .addComponent(jDateChooser_date, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txt_imagepath)))))
+                                    .addComponent(txt_imagepath, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addComponent(jDesktopPane1))
                 .addGap(40, 40, 40))
         );
@@ -338,114 +425,149 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
         jPanel5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/new-icon.png"))); // NOI18N
-        jButton2.setText("New");
-        jButton2.setBorder(null);
-        jButton2.setMaximumSize(new java.awt.Dimension(80, 32));
-        jButton2.setMinimumSize(new java.awt.Dimension(80, 32));
-        jButton2.setPreferredSize(new java.awt.Dimension(80, 32));
-
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Save-icon.png"))); // NOI18N
-        jButton3.setText("Save");
-        jButton3.setBorder(null);
-        jButton3.setMaximumSize(new java.awt.Dimension(80, 32));
-        jButton3.setMinimumSize(new java.awt.Dimension(80, 32));
-        jButton3.setPreferredSize(new java.awt.Dimension(80, 32));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btn_new.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_new.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/new-icon.png"))); // NOI18N
+        btn_new.setText("New");
+        btn_new.setBorder(null);
+        btn_new.setMaximumSize(new java.awt.Dimension(80, 32));
+        btn_new.setMinimumSize(new java.awt.Dimension(80, 32));
+        btn_new.setPreferredSize(new java.awt.Dimension(80, 32));
+        btn_new.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btn_newActionPerformed(evt);
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/update-icon.png"))); // NOI18N
-        jButton4.setText("Update");
-        jButton4.setBorder(null);
-
-        jButton5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/delete-icon.png"))); // NOI18N
-        jButton5.setText("Delete");
-        jButton5.setBorder(null);
-        jButton5.setMaximumSize(new java.awt.Dimension(80, 32));
-        jButton5.setMinimumSize(new java.awt.Dimension(80, 32));
-        jButton5.setPreferredSize(new java.awt.Dimension(80, 32));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        btn_save.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_save.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Save-icon.png"))); // NOI18N
+        btn_save.setText("Save");
+        btn_save.setBorder(null);
+        btn_save.setMaximumSize(new java.awt.Dimension(80, 32));
+        btn_save.setMinimumSize(new java.awt.Dimension(80, 32));
+        btn_save.setPreferredSize(new java.awt.Dimension(80, 32));
+        btn_save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                btn_saveActionPerformed(evt);
             }
         });
 
-        jButton6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Clear-icon.png"))); // NOI18N
-        jButton6.setText("Clear");
-        jButton6.setBorder(null);
-        jButton6.setMaximumSize(new java.awt.Dimension(80, 32));
-        jButton6.setMinimumSize(new java.awt.Dimension(80, 32));
-        jButton6.setPreferredSize(new java.awt.Dimension(80, 32));
+        btn_update.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/update-icon.png"))); // NOI18N
+        btn_update.setText("Update");
+        btn_update.setBorder(null);
+        btn_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_updateActionPerformed(evt);
+            }
+        });
 
+        btn_delete.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/delete-icon.png"))); // NOI18N
+        btn_delete.setText("Delete");
+        btn_delete.setBorder(null);
+        btn_delete.setMaximumSize(new java.awt.Dimension(80, 32));
+        btn_delete.setMinimumSize(new java.awt.Dimension(80, 32));
+        btn_delete.setPreferredSize(new java.awt.Dimension(80, 32));
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
+        btn_clear.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Clear-icon.png"))); // NOI18N
+        btn_clear.setText("Clear");
+        btn_clear.setBorder(null);
+        btn_clear.setMaximumSize(new java.awt.Dimension(80, 32));
+        btn_clear.setMinimumSize(new java.awt.Dimension(80, 32));
+        btn_clear.setPreferredSize(new java.awt.Dimension(80, 32));
+        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clearActionPerformed(evt);
+            }
+        });
+
+        jTextField5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 153, 255)));
         jTextField5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField5ActionPerformed(evt);
             }
         });
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
         jLabel12.setText("SEARCH");
+
+        btn_print.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/print-icon.png"))); // NOI18N
+        btn_print.setText("Print");
+        btn_print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_printActionPerformed(evt);
+            }
+        });
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/employees/Admin.png"))); // NOI18N
+        jButton1.setText("Admin");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(4, 4, 4)
                 .addComponent(jLabel12)
                 .addGap(18, 18, 18)
-                .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
-                .addGap(36, 36, 36)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextField5)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_print, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_new, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel12))
-                        .addComponent(jTextField5)))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btn_print, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel12))
+                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_update, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_new, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -453,21 +575,25 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41))
+            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(7, 7, 7))
         );
 
+        jTable1.setFont(new java.awt.Font("Calibri", 1, 17)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
@@ -477,6 +603,13 @@ public class EmployeeInfo extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setGridColor(new java.awt.Color(51, 153, 255));
+        jTable1.setSelectionBackground(new java.awt.Color(153, 153, 153));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -494,7 +627,6 @@ public class EmployeeInfo extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -523,14 +655,38 @@ public class EmployeeInfo extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_numberActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    
+    /** DELETE BUTTON ***/
+    
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        if (txt_id.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Please select data to delete");
+        } else {
+            int p = JOptionPane.showConfirmDialog(null, "Do you want to delete employee","Delete",JOptionPane.YES_NO_OPTION);
+            
+                if (p == 0) {
+                    try {
+                        String sql = "delete from employeeinfo where EmployeeID = ?  ";
+                        pst = conn.prepareStatement(sql);
+                        pst.setString(1, txt_id.getText());
+                        pst.execute();
+                        
+                        JOptionPane.showMessageDialog(null, "Deleted Successfull");
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Error deleting data from database");
+                    }
+                }
+        }
+        UpdateTable();
+        ClearFileds();
+    }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
-
+    
+    
+    /**UPLOAD IMAGE BUTTON METHOD **/
     private void btn_image_uploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_image_uploadActionPerformed
         
         //initialization of file chooser
@@ -584,8 +740,12 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private void jRadioButton_femaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton_femaleActionPerformed
         gender = "Female";
     }//GEN-LAST:event_jRadioButton_femaleActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    
+    
+    
+    /** SAVE BUTTON METHOD & VALIDATION **/
+    
+    private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         String name_validate = txt_name.getText();
         String age_validate = txt_age.getText();
         String blood_validate = txt_blood.getText();
@@ -596,23 +756,31 @@ public class EmployeeInfo extends javax.swing.JFrame {
         
         /** Validation Conditions **/
         
-        if (name_validate.equals("")) {
-            JOptionPane.showMessageDialog(null, "Please enter name");
-        } else if( gender == null){
+        if (name_validate.equals("") || name_validate.matches(".*\\d+.*")) {
+            JOptionPane.showMessageDialog(null, "Please check Name value");
+        } 
+        else if( gender == null){
             JOptionPane.showMessageDialog(null, "Please select gender male or female");
-        } else if (age_validate.equals("")) {
+        }
+        else if (age_validate.equals("") || (! age_validate.matches("[0-9]+")) ) {
             JOptionPane.showMessageDialog(null, "Please enter age ");
-        }else if (blood_validate.equals("")) {
+        }
+        else if (blood_validate.equals("") || blood_validate.length() >= 2 ) {
             JOptionPane.showMessageDialog(null, "Please enter blood group");
-        }else if (number_validate.equals("")) {
+        }
+        else if (number_validate.equals("") || number_validate.matches("[0-9]+") ) {
             JOptionPane.showMessageDialog(null, "Please enter contact number");
-        }else if (jComboBox_qualification.getSelectedItem() == null) {
+        }
+        else if (jComboBox_qualification.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(null, "Please select qualification");
-        }else if(date_validate == null) {
+        }
+        else if(date_validate == null) {
             JOptionPane.showMessageDialog(null, "Please enter a date of joinning");
-        }else if (address_validate.equals("")) {
+        }
+        else if (address_validate.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter address");
-        }else if (employeeImage == null) {
+        }
+        else if (employeeImage == null) {
             JOptionPane.showMessageDialog(null, "Please choose image");
         }
         
@@ -653,7 +821,163 @@ public class EmployeeInfo extends javax.swing.JFrame {
             }
         }
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
+        
+        UpdateTable();
+       
+        
+        btn_save.setEnabled(true);
+        btn_new.setEnabled(true);
+        btn_update.setEnabled(true);
+        btn_delete.setEnabled(true);
+        btn_clear.setEnabled(true);
+        
+    }//GEN-LAST:event_btn_saveActionPerformed
+
+    
+    
+    private void btn_newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_newActionPerformed
+        ClearFileds();
+        btn_save.setEnabled(true);
+        btn_new.setEnabled(false);
+        btn_update.setEnabled(false);
+        btn_delete.setEnabled(false);
+        btn_clear.setEnabled(false);
+        
+    }//GEN-LAST:event_btn_newActionPerformed
+  
+    
+    /** UPDATE BUTTON ****/
+    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
+        try {
+            String sql = "update employeeinfo set Name = ?,Gender= ?,Age= ?,BloodGroup= ?,ContactNo= ?,Qualification= ?,DOJ= ?,Adress= ?,EmpImage= ? where EmployeeID = ?";
+            pst = conn.prepareStatement(sql);
+            
+                pst.setString(1, txt_name.getText());
+                
+                  if (jRadioButton_male.isSelected()) {
+                   pst.setString(2, "Male");
+               }else {
+                   pst.setString(3, "Female");
+               }
+                
+                pst.setString(3,txt_age.getText());
+                pst.setString(4,txt_blood.getText());
+                pst.setString(5,txt_number.getText());
+                
+                 String comboValue = jComboBox_qualification.getSelectedItem().toString();
+                pst.setString(6,comboValue);
+             
+                
+                java.util.Date date = jDateChooser_date.getDate();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String selectedDate = sdf.format(date);
+                
+                pst.setString(7,selectedDate);
+                pst.setString(8,txt_address.getText());
+
+                pst.setBytes(9,employeeImage);
+                pst.setString(10, txt_id.getText());
+
+                pst.execute();
+                
+            JOptionPane.showMessageDialog(null, "Update Successful");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }finally {
+            try{
+                UpdateTable();
+               
+                
+            }catch(Exception e) {
+                
+            }
+        }
+    }//GEN-LAST:event_btn_updateActionPerformed
+
+    /*** MOUSE CLICK EVENT ON TABLE ***/
+    
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+       
+        int row =  jTable1.getSelectedRow();
+        String table_data = (jTable1.getModel().getValueAt(row, 0).toString());
+        
+        try {
+            String sql = " Select * from employeeinfo where EmployeeID ='"+ table_data+"'";
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            
+            if(rs.next()) {
+                txt_id.setText(rs.getString("EmployeeID"));
+                txt_address.setText(rs.getString("Adress"));
+                txt_age.setText(rs.getString("Age"));
+                txt_blood.setText("BloodGroup");
+                txt_name.setText(rs.getString("Name"));
+                txt_number.setText(rs.getString("ContactNo"));
+
+                        
+                if (rs.getString("Gender").equals("Male")) {
+                    jRadioButton_male.setSelected(true);
+                }
+                
+                if ( rs.getString("Gender").equals("Female")) {
+                    jRadioButton_female.setSelected(true);
+                }
+                
+                jComboBox_qualification.setSelectedItem(rs.getString("Qualification"));
+                
+                java.util.Date  date = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("DOJ"));
+                jDateChooser_date.setDate(date);
+                
+                byte[] imageData = rs.getBytes("EmpImage");
+                format = new ImageIcon(imageData);
+                
+                jLabel11.setIcon(format);
+                employeeImage = imageData;
+
+                    
+            }   
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading data from datababse");
+        }
+        btn_save.setEnabled(false);
+        btn_new.setEnabled(true);
+        btn_update.setEnabled(true);
+        btn_delete.setEnabled(true);
+        btn_clear.setEnabled(true);
+        
+         
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
+      ClearFileds();
+    }//GEN-LAST:event_btn_clearActionPerformed
+    
+    /*** PRINT BUTTON METHOD **/
+    
+    private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
+      
+        MessageFormat header = new MessageFormat("Employee List Report Print");
+        MessageFormat footer = new MessageFormat("Page {0,number,integer}");
+        
+        try {
+            jTable1.print(JTable.PrintMode.FIT_WIDTH,header,footer);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error Printing data");
+        }
+    }//GEN-LAST:event_btn_printActionPerformed
+    
+    /*** ADMIN PANEL BUTTON ***/
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        AdminLogin admin = new AdminLogin();
+       admin.setVisible(true);
+        
+       this.setVisible(false);
+        
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -691,13 +1015,15 @@ public class EmployeeInfo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_clear;
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_image_upload;
+    private javax.swing.JButton btn_new;
+    private javax.swing.JButton btn_print;
+    private javax.swing.JButton btn_save;
+    private javax.swing.JButton btn_update;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox_qualification;
     private com.toedter.calendar.JDateChooser jDateChooser_date;
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -713,21 +1039,25 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton_female;
     private javax.swing.JRadioButton jRadioButton_male;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextArea txt_address;
     private javax.swing.JTextField txt_age;
     private javax.swing.JTextField txt_blood;
+    private javax.swing.JTextField txt_id;
     private javax.swing.JTextField txt_imagepath;
     private javax.swing.JTextField txt_name;
     private javax.swing.JTextField txt_number;
@@ -737,4 +1067,5 @@ public class EmployeeInfo extends javax.swing.JFrame {
     private ImageIcon viewimage = null;
     private String gender;
     byte[] employeeImage = null;
+    private ImageIcon format = null;
 }
